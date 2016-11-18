@@ -28,13 +28,17 @@ export default function(radius) {
           }
           quad.r = max(quad, q => q ? q.r : 0);
         });
+        
       nodes.forEach((node, i) => {
         const ri = radius(node);
         const ri2 = ri * ri;
         const xi = node.x + node.vx;
         const yi = node.y + node.vy;
+
         tree.visit(function apply(quad, x0, y0, x1, y1) {
-          var data = quad.data, rj = quad.r, r = ri + rj;
+          let data = quad.data;
+          let rj = quad.r;
+          let r = ri + rj;
           if (data) {
             if (data.index > i) {
               var x = xi - data.x - data.vx,
@@ -54,6 +58,7 @@ export default function(radius) {
           }
           return x0 > xi + r || x1 < xi - r || y0 > yi + r || y1 < yi - r;
         });
+
       })
     })
   }
