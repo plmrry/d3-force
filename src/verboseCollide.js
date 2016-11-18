@@ -1,7 +1,7 @@
 import constant from "./constant";
 import jiggle from "./jiggle";
 import {quadtree} from "d3-quadtree";
-import {range} from "d3-array";
+import {range, max} from "d3-array";
 
 /* eslint no-console: "off" */
 
@@ -22,25 +22,23 @@ export default function(radius) {
   if (typeof radius !== "function") radius = constant(radius == null ? 1 : +radius);
 
   function force() {
-    let xi,
-        yi,
-        ri,
-        ri2;
+    nodes.forEach((d,i) => radii[i] = +radius(nodes[i], i, nodes))
+
+    // let xi,
+        // yi;
+        // ri2;
 
     range(iterations).forEach(() => {
-      const tree = quadtree(nodes, x, y).visitAfter(function prepare(quad) {
-        if (quad.data) return quad.r = radii[quad.data.index];
-        for (var i = quad.r = 0; i < 4; ++i) {
-          if (quad[i] && quad[i].r > quad.r) {
-            quad.r = quad[i].r;
-          }
-        }
-      });
+      const tree = quadtree(nodes, x, y)
+        .visitAfter(function prepare(quad) {
+          if (quad.data) return quad.r = radii[quad.data.index];
+          quad.r = max(quad, q => q ? q.r : 0);
+        });
       nodes.forEach((node, i) => {
-        // node = nodes[i];
-        ri = radii[i], ri2 = ri * ri;
-        xi = node.x + node.vx;
-        yi = node.y + node.vy;
+        const ri = radii[i]
+        const ri2 = ri * ri;
+        const xi = node.x + node.vx;
+        const yi = node.y + node.vy;
         tree.visit(function apply(quad, x0, y0, x1, y1) {
           var data = quad.data, rj = quad.r, r = ri + rj;
           if (data) {
@@ -67,8 +65,9 @@ export default function(radius) {
   }
 
   force.initialize = function(_) {
-    var i, n = (nodes = _).length; radii = new Array(n);
-    for (i = 0; i < n; ++i) radii[i] = +radius(nodes[i], i, nodes);
+    nodes = _;
+    radii = new Array(nodes.length);
+    // for (i = 0; i < n; ++i) radii[i] = +radius(nodes[i], i, nodes);
   };
 
   force.iterations = function(_) {

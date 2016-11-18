@@ -31,8 +31,8 @@
       return { radius: Math.random() * 20 }
     });
 
-    var verbsoeCollide = d3.verboseCollide(function(d) { return d.radius; })
-      // .iterations(20)
+    var forceCollide = d3.verboseCollide(function(d) { return d.radius; })
+      .iterations(20)
     	.strength(0.8);
 
     var s = 0.02;
@@ -44,7 +44,7 @@
     	.force('x', forceX)
     	.force('y', forceY)
     	.force('center', d3.forceCenter(width/2, height/2))
-    	.force('collide', verbsoeCollide)
+    	.force('collide', forceCollide)
     	.on('tick', function() {
         svg.selectAll('.node')
         	.attr('cx', function(d) { return d.x; })
@@ -80,7 +80,8 @@
           	return function(t) {
               d.radius = i(t);
               that.attr('r', function(d) { return d.radius; });
-              force.nodes(data)
+              // force.nodes(data)
+              forceCollide.initialize(data);
             }
         	});
        force.alpha(1).restart();
