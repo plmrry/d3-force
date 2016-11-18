@@ -1,3 +1,7 @@
+# Verbose Collision Detection
+
+This is a fork of `d3-force` that includes an extremely verbose version of the `collide` algorithm.
+
 # d3-force
 
 This module implements a [velocity Verlet](https://en.wikipedia.org/wiki/Verlet_integration) numerical integrator for simulating physical forces on particles. The simulation is simplified: it assumes a constant unit time step Δ*t* = 1 for each step, and a constant unit mass *m* = 1 for all particles. As a result, a force *F* acting on a particle is equivalent to a constant acceleration *a* over the time interval Δ*t*, and can be simulated simply by adding to the particle’s velocity, which is then added to the particle’s position.
