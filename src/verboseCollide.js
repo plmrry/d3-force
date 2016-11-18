@@ -15,27 +15,21 @@ function y(d) {
 
 export default function(radius) {
   var nodes,
-      radii,
       strength = 1,
       iterations = 1;
 
-  if (typeof radius !== "function") radius = constant(radius == null ? 1 : +radius);
-
   function force() {
-    nodes.forEach((d,i) => radii[i] = +radius(nodes[i], i, nodes))
-
-    // let xi,
-        // yi;
-        // ri2;
 
     range(iterations).forEach(() => {
       const tree = quadtree(nodes, x, y)
         .visitAfter(function prepare(quad) {
-          if (quad.data) return quad.r = radii[quad.data.index];
+          if (quad.data) {
+            return quad.r = radius(quad.data);
+          }
           quad.r = max(quad, q => q ? q.r : 0);
         });
       nodes.forEach((node, i) => {
-        const ri = radii[i]
+        const ri = radius(node);
         const ri2 = ri * ri;
         const xi = node.x + node.vx;
         const yi = node.y + node.vy;
@@ -66,8 +60,6 @@ export default function(radius) {
 
   force.initialize = function(_) {
     nodes = _;
-    radii = new Array(nodes.length);
-    // for (i = 0; i < n; ++i) radii[i] = +radius(nodes[i], i, nodes);
   };
 
   force.iterations = function(_) {
